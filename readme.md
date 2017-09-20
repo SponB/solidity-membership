@@ -4,14 +4,14 @@
 
 ## Roles
 
- 1. Owner
-  - The owner is the address publishing the smart contract. It can add and remove administrators.
+ 1. Owner  
+  The owner is the address publishing the smart contract. It can add and remove administrators.
 
- 1. Administrator
-  - The administrator can activate and deactivate a registered user.
+ 1. Administrator  
+  The administrator can activate and deactivate a registered user.
 
- 1. User
-   - An user can register and unregister from the service.
+ 1. User  
+  An user can register and unregister from the service.
 
 ## Contract description
 

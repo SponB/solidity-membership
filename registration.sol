@@ -34,26 +34,27 @@ pragma solidity ^0.4.18;
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+
 contract Registration {
 
     mapping(address => uint) public active;
     mapping(address => uint) public register;
     mapping(address => uint) private admins;
+    mapping(address => uint256) public code;
     address private _owner;
 
     /* 
-       Events    
-    */
+     * Events    
+     */
     
     event Registered(address indexed from);
     event Unregistered(address indexed from);
     event Activated(address indexed admin, address indexed user);
     event Deactivated(address indexed admin, address indexed user);
 
-
     /* 
-       Modifiers    
-    */
+     * Modifiers    
+     */
 
     modifier isOwner {
         require(msg.sender == _owner);
@@ -80,48 +81,62 @@ contract Registration {
         _;
     }
     
-    modifier isActive{
+    modifier isActive {
         require(active[msg.sender] == 1);
         _;
     }
-
+    
+    modifier validAddress(address a) {
+        require(a != address(0));
+        _;
+    }
 
     /* 
-       Public methods    
-    */
+     * Public methods    
+     */
 
     function Registration() public {
         _owner = msg.sender;
+        admins[msg.sender] = 1;
     }
 
     function () external payable {
         assert(false);
     }
 
-    function addAdmin(address u) isOwner public {
+    function addAdmin(address u) isOwner validAddress(u) public {
         admins[u] = 1;
     }
 
-    function removeAdmin(address u) isOwner public {
+    function removeAdmin(address u) isOwner validAddress(u) public {
         admins[u] = 0;
     }
 
     function addMe() public notRegistered {
         register[msg.sender] = 1;
+        Registered(msg.sender);
     }
 
     function removeMe() public isRegistered {
         active[msg.sender] = 0;
         register[msg.sender] = 0;
+        Unregistered(msg.sender);
     }
 
-    function activate(address u) isAdmin isRegistered notActive public {
+    function activate(address u) isAdmin validAddress(u) public {
+        require(active[u] == 0);
         active[u] = 1;
+        Activated(msg.sender, u);
     }
 
-    function deactivate(address u) isAdmin isRegistered isActive public {
+    function deactivate(address u) isAdmin validAddress(u) public {
+        require(active[u] == 1);
         active[u] = 0;
+        Deactivated(msg.sender, u);
     }
 
-
+    function setCode(uint256 _c) isRegistered isActive public {
+        code[msg.sender] = _c;   
+    }
+    
 }
